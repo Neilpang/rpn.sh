@@ -13,7 +13,7 @@ SBIN="/usr/sbin/nginx"
 CACHE="/var/cache/nginx"
 CONFPATH="/etc/nginx/conf.d"
 SSLPATH="$CONFPATH/ssl"
-
+PID="/var/run/nginx.pid"
 
 _debug() {
   if [ -z "$DEBUG" ] ; then
@@ -67,7 +67,7 @@ buildnginx() {
   --conf-path=/etc/nginx/nginx.conf \
   --error-log-path=/var/log/nginx/error.log \
   --http-log-path=/var/log/nginx/access.log \
-  --pid-path=/var/run/nginx.pid \
+  --pid-path=$PID \
   --lock-path=/var/run/nginx.lock \
   --http-client-body-temp-path=$CACHE/client_temp \
   --http-proxy-temp-path=$CACHE/proxy_temp \
@@ -128,7 +128,7 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/run/nginx.pid
+PIDFile=$PID
 ExecStartPre=$SBIN -t
 ExecStart=$SBIN
 ExecReload=/bin/kill -s HUP $MAINPID
@@ -143,13 +143,51 @@ WantedBy=multi-user.target
 
 }
 
+_installupstart() {
+echo "
+description \"nginx http daemon\"
+author \"George Shammas <georgyo@gmail.com>\"
+
+start on (filesystem and net-device-up IFACE=lo)
+stop on runlevel [!2345]
+
+env DAEMON=$SBIN
+env PID=$PID
+
+expect fork
+respawn
+respawn limit 10 5
+#oom never
+
+pre-start script
+        $DAEMON -t
+        if [ $? -ne 0 ]
+                then exit $?
+        fi
+end script
+
+exec $DAEMON
+" > /etc/init/nginx.conf
+
+  initctl reload-configuration
+  initctl list | grep nginx
+  initctl start nginx
+
+
+}
+
 install() {
 
   mkdir -p "$RPN_HOME"
   cp  rpn.sh "$RPN_HOME/"
   cp  *.conf "$RPN_HOME/"
   
-  _installsystemd
+  if command -v systemctl > /dev/null ; then
+    _installsystemd
+  else 
+    _installupstart
+  fi
+  
   cp nginx.conf  /etc/nginx/nginx.conf
   
   service nginx start 
