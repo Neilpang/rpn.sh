@@ -352,10 +352,12 @@ _detect_profile() {
   fi
 }
 
-
+list() {
+  ls -l $CONFPATH/*.conf
+}
 
 showhelp() {
-  _info "Usage: buildnginx|install|add|addssl"
+  _info "Usage: buildnginx|install|add|addssl|list"
 }
 
 if [ -z "$1" ] ; then
