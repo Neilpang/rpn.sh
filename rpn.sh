@@ -57,6 +57,12 @@ buildnginx() {
   
   cd nginx-$N_VER
   
+  mkdir -p $CACHE/client_temp
+  mkdir -p $CACHE/proxy_temp
+  mkdir -p $CACHE/fastcgi_temp
+  mkdir -p $CACHE/uwsgi_temp
+  mkdir -p $CACHE/scgi_temp
+  
   ./configure --prefix=/etc/nginx \
   --sbin-path=$SBIN \
   --conf-path=/etc/nginx/nginx.conf \
@@ -131,18 +137,25 @@ install() {
   cd nginx-$N_VER
   
   make install
-
+  cd ..
+  
+  useradd nginx
+  
+  chown -R nginx:nginx $CACHE
+  
+  
   _installsystemd
   cp nginx.conf  /etc/nginx/nginx.conf
   service nginx start 
   service nginx status
   
   mkdir -p "$RPN_HOME"
-  cp -rf * "$RPN_HOME/"
+  cp  rpn.sh "$RPN_HOME/"
+  cp  *.conf "$RPN_HOME/"
   
   PRF="$(_detect_profile)"
   
-  if [ -z "$PRF" ] ; then
+  if [ "$PRF" ] ; then
     _setopt "$PRF" "alias rpn=$RPN_HOME/rpn.sh"
   fi
   
