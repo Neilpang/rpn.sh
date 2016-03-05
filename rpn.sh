@@ -160,13 +160,13 @@ respawn limit 10 5
 #oom never
 
 pre-start script
-        $DAEMON -t
-        if [ $? -ne 0 ]
-                then exit $?
+        \$DAEMON -t
+        if [ \$? -ne 0 ]
+                then exit \$?
         fi
 end script
 
-exec $DAEMON
+exec \$DAEMON
 " > /etc/init/nginx.conf
 
   initctl reload-configuration
