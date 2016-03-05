@@ -260,7 +260,7 @@ _setopt() {
       __val="$(echo $__val | sed 's/&/\\&/g')"
     fi
     text="$(cat $__conf)"
-    printf "$text" | sed "s|^$__opt$__sep.*$|$__opt$__sep$__val$__end|" > "$__conf"
+    echo -n "$text" | sed "s|^$__opt$__sep.*$|$__opt$__sep$__val$__end|" > "$__conf"
   else
     _debug APP
     echo "$__opt$__sep$__val$__end" >> "$__conf"
