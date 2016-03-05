@@ -190,7 +190,7 @@ add() {
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
-    sed -i  "/#subfilter/a \       subs_filter $updomain $maindomain;"  "$domainconf"
+    sed -i  "/#subfilter/a \       sub_filter $updomain $maindomain;"  "$domainconf"
   fi
 
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
@@ -234,7 +234,7 @@ addssl() {
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
-    sed -i  "/#subfilter/a \        subs_filter $updomain $maindomain;"  "$domainconf"
+    sed -i  "/#subfilter/a \        sub_filter $updomain $maindomain;"  "$domainconf"
   fi
   
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
