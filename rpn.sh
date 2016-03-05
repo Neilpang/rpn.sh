@@ -189,7 +189,7 @@ add() {
 
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
   
-  _setopt "$domainconf" "        proxy_set_header Referert" " " "$uphost" ";"  
+  _setopt "$domainconf" "        proxy_set_header Referer" " " "$uphost" ";"  
   
   mv "$domainconf" "$CONFPATH"
   service nginx reload
