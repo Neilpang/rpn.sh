@@ -105,6 +105,19 @@ buildnginx() {
   mkdir -p "$CONFPATH"
   mkdir -p "$SSLPATH"
   
+  cd nginx-$N_VER
+  
+  make install
+  cd ..
+  
+  useradd nginx
+  
+  chown -R nginx:nginx $CACHE
+
+  mkdir -p "$RPN_HOME"
+  cp  rpn.sh "$RPN_HOME/"
+  cp  *.conf "$RPN_HOME/"
+  
 }
 
 
@@ -134,24 +147,14 @@ WantedBy=multi-user.target
 }
 
 install() {
-  cd nginx-$N_VER
-  
-  make install
-  cd ..
-  
-  useradd nginx
-  
-  chown -R nginx:nginx $CACHE
-  
-  
+
   _installsystemd
   cp nginx.conf  /etc/nginx/nginx.conf
+  
   service nginx start 
   service nginx status
   
-  mkdir -p "$RPN_HOME"
-  cp  rpn.sh "$RPN_HOME/"
-  cp  *.conf "$RPN_HOME/"
+
   
   PRF="$(_detect_profile)"
   
