@@ -186,7 +186,7 @@ add() {
 
   _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
-  if echo $uphost | grep grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
+  if echo $uphost | grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
@@ -230,7 +230,7 @@ addssl() {
   
   _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
-  if echo $uphost | grep grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
+  if echo $uphost | grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
