@@ -187,14 +187,16 @@ add() {
 
   _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
-  updomain="$(echo $uphost| cut -d : -f 2 | tr -d "/")"
+  if echo $uphost | grep grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
+    updomain=$maindomain
+  else
+    updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
+  fi
 
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
   
-  _setopt "$domainconf" "        proxy_set_header Referer" " " "$uphost" ";"  
-  
   mv "$domainconf" "$CONFPATH"
-  service nginx reload
+  service nginx restart
 
 
 }
@@ -228,14 +230,17 @@ addssl() {
   
   _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
-  updomain="$(echo $uphost| cut -d : -f 2 | tr -d "/")"
-
-  _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
+  if echo $uphost | grep grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
+    updomain=$maindomain
+  else
+    updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
+  fi
   
-  _setopt "$domainconf" "        proxy_set_header Referer" " " "$uphost" ";"  
+  _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
+
   
   mv "$domainconf" "$CONFPATH"
-  service nginx reload
+  service nginx restart
 }
 
 
