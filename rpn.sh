@@ -215,14 +215,14 @@ addssl() {
   
   _setopt "$domainconf" "    server_name" " " "$domainlist" ";"
   
-  cp "$cert" "$SSLPATH/maindomain.cer"
-  cp "$key"  "$SSLPATH/maindomain.key"
+  cp "$cert" "$SSLPATH/$maindomain.cer"
+  cp "$key"  "$SSLPATH/$maindomain.key"
   
-  echo ""  >> "$SSLPATH/maindomain.cer"
-  cat "$ca" "$SSLPATH/maindomain.cer"
+  echo ""  >> "$SSLPATH/$maindomain.cer"
+  cat "$ca" >> "$SSLPATH/$maindomain.cer"
   
-  _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/maindomain.cer" ";"
-  _setopt "$domainconf" "    ssl_certificate_key" " " "$SSLPATH/maindomain.key" ";"
+  _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/$maindomain.cer" ";"
+  _setopt "$domainconf" "    ssl_certificate_key" " " "$SSLPATH/$maindomain.key" ";"
   
   _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
@@ -230,7 +230,7 @@ addssl() {
 
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
   
-  _setopt "$domainconf" "        proxy_set_header Referert" " " "$uphost" ";"  
+  _setopt "$domainconf" "        proxy_set_header Referer" " " "$uphost" ";"  
   
   mv "$domainconf" "$CONFPATH"
   service nginx reload
