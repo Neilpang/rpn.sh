@@ -240,16 +240,16 @@ add() {
 }
 
 addssl() {
-  if [ -z "$1" ] ; then
-    _err "Usage: addssl 'aa.com www.aa.com'  'http[s]://www.google.com'  /path/to/aa.cer  /path/to/aa.key  /path/to/aa.ca"
-    return 1
-  fi
-  
   domainlist="$1"
   uphost="$2"
   cert="$3"
   key="$4"
   ca="$5"
+  
+  if [ -z "$key" ] ; then
+    _err "Usage: addssl 'aa.com www.aa.com'  'http[s]://www.google.com'  /path/to/aa.cer  /path/to/aa.key  /path/to/aa.ca"
+    return 1
+  fi
   
   maindomain="$(printf "$domainlist" | cut -d ' ' -f 1)"
   domainconf="$RPN_HOME/$maindomain.ssl.conf"
