@@ -212,7 +212,7 @@ addssl() {
   ca="$5"
   
   maindomain="$(printf "$domainlist" | cut -d ' ' -f 1)"
-  domainconf="$RPN_HOME/$maindomain.conf.ssl"
+  domainconf="$RPN_HOME/$maindomain.ssl.conf"
   cp $RPN_HOME/serverssl.conf "$domainconf"
   
   _setopt "$domainconf" "    server_name" " " "$domainlist" ";"
@@ -310,7 +310,7 @@ _detect_profile() {
 
 
 showhelp() {
-  _info "Usage: buildnginx|install|add"
+  _info "Usage: buildnginx|install|add|addssl"
 }
 
 if [ -z "$1" ] ; then
