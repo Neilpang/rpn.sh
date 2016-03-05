@@ -48,7 +48,6 @@ buildnginx() {
   apt-get update
   apt-get  install -y curl git  build-essential libc6 libpcre3 libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev lsb-base libgeoip-dev libgd2-xpm-dev libatomic-ops-dev libxml2-dev libxslt1-dev
 
-  git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git
 
   curl http://nginx.org/download/nginx-$N_VER.tar.gz -O
   
@@ -97,7 +96,7 @@ buildnginx() {
   --with-cc-opt='-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
   --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed' \
   --with-ipv6 \
-  --add-module=../ngx_http_substitutions_filter_module
+  --with-http_sub_module
 
   make
   
@@ -191,6 +190,7 @@ add() {
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
+    sed -i  "/#subfilter/a \       subs_filter $updomain $maindomain;"  "$domainconf"
   fi
 
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
@@ -234,10 +234,12 @@ addssl() {
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
+    sed -i  "/#subfilter/a \        subs_filter $updomain $maindomain;"  "$domainconf"
   fi
   
   _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
 
+  
   
   mv "$domainconf" "$CONFPATH"
   service nginx restart
