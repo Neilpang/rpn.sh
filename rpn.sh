@@ -180,13 +180,13 @@ add() {
   _setopt "$domainconf" "    server_name" " " "$domainlist" ";"
   
 
-  _setopt "$domainconf" "  		proxy_pass" " " "$uphost" ";"
+  _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
   updomain="$(echo $uphost| cut -d : -f 2 | tr -d "/")"
 
-  _setopt "$domainconf" "  		proxy_set_header Host" " " "$updomain" ";"
+  _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
   
-  _setopt "$domainconf" "		proxy_set_header Referert" " " "$uphost" ";"  
+  _setopt "$domainconf" "        proxy_set_header Referert" " " "$uphost" ";"  
   
   mv "$domainconf" "$CONFPATH"
   service nginx reload
@@ -221,13 +221,13 @@ addssl() {
   _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/maindomain.cer" ";"
   _setopt "$domainconf" "    ssl_certificate_key" " " "$SSLPATH/maindomain.key" ";"
   
-  _setopt "$domainconf" "  		proxy_pass" " " "$uphost" ";"
+  _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
 
   updomain="$(echo $uphost| cut -d : -f 2 | tr -d "/")"
 
-  _setopt "$domainconf" "  		proxy_set_header Host" " " "$updomain" ";"
+  _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
   
-  _setopt "$domainconf" "		proxy_set_header Referert" " " "$uphost" ";"  
+  _setopt "$domainconf" "        proxy_set_header Referert" " " "$uphost" ";"  
   
   mv "$domainconf" "$CONFPATH"
   service nginx reload
