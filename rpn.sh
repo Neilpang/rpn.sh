@@ -292,7 +292,7 @@ _detect_profile() {
 
 
 showhelp() {
-  _info Usage: buildnginx|install|add
+  _info "Usage: buildnginx|install|add"
 }
 
 if [ -z "$1" ] ; then
