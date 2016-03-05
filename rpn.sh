@@ -260,8 +260,10 @@ addssl() {
   cp "$cert" "$SSLPATH/$maindomain.cer"
   cp "$key"  "$SSLPATH/$maindomain.key"
   
-  echo ""  >> "$SSLPATH/$maindomain.cer"
-  cat "$ca" >> "$SSLPATH/$maindomain.cer"
+  if [ "$ca" ] ; then
+    echo ""  >> "$SSLPATH/$maindomain.cer"
+    cat "$ca" >> "$SSLPATH/$maindomain.cer"
+  fi
   
   _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/$maindomain.cer" ";"
   _setopt "$domainconf" "    ssl_certificate_key" " " "$SSLPATH/$maindomain.key" ";"
