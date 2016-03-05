@@ -114,9 +114,7 @@ buildnginx() {
   
   chown -R nginx:nginx $CACHE
 
-  mkdir -p "$RPN_HOME"
-  cp  rpn.sh "$RPN_HOME/"
-  cp  *.conf "$RPN_HOME/"
+
   
 }
 
@@ -148,6 +146,10 @@ WantedBy=multi-user.target
 
 install() {
 
+  mkdir -p "$RPN_HOME"
+  cp  rpn.sh "$RPN_HOME/"
+  cp  *.conf "$RPN_HOME/"
+  
   _installsystemd
   cp nginx.conf  /etc/nginx/nginx.conf
   
