@@ -46,7 +46,10 @@ _err() {
 
 buildnginx() {
   apt-get update
-  apt-get  install -y curl git  build-essential libc6 libpcre3 libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev lsb-base libgeoip-dev libgd2-xpm-dev libatomic-ops-dev libxml2-dev libxslt1-dev
+  
+  for i in curl git  build-essential libc6 libpcre3 libpcre3-dev libpcrecpp0 libpcrecpp0v5 libssl-dev zlib1g-dev lsb-base libgeoip-dev libgd2-xpm-dev libatomic-ops-dev libxml2-dev libxslt1-dev ; do
+    apt-get  install -y  $i
+  done
 
 
   curl http://nginx.org/download/nginx-$N_VER.tar.gz -O
