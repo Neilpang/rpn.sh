@@ -11,7 +11,8 @@ N_VER="1.9.12"
 
 SBIN="/usr/sbin/nginx"
 CACHE="/var/cache/nginx"
-CONFPATH="/etc/nginx/conf.d"
+NGINX_HOME="/etc/nginx"
+CONFPATH="$NGINX_HOME/conf.d"
 SSLPATH="$CONFPATH/ssl"
 PID="/var/run/nginx.pid"
 
@@ -204,6 +205,11 @@ install() {
     _setopt "$PRF" "alias rpn=$RPN_HOME/rpn.sh"
   fi
   
+  if command -v curl >/dev/null 2>&1 ; then
+    curl  https://get.acme.sh | sh
+  else if command -v wget >/dev/null 2>&1 ;
+    wget -O-  https://get.acme.sh | sh
+  fi
 }
 
 
@@ -242,6 +248,43 @@ add() {
 
 }
 
+
+issuecert() {
+
+  site="$1"
+  if [ -z "$site" ] ; then
+    echo  "Usage: site"
+    return 1
+  fi
+
+  domainconf="$CONFPATH/$site.conf"
+  if [ ! -f $domainconf ] ; then
+    echo "$domainconf not found"
+    return 1
+  fi
+
+  if ! sed -i "s|#\(location.*#acme$\)|\\1|" "$domainconf" ; then
+    echo "#acme sed error."
+    return 1
+  fi
+
+  acme.sh --issue \
+  $(grep -o "server_name.*;$" "$domainconf" | tr  -d ';' | sed "s/server_name//" | sed "s/ / -d /g") \
+  -w $NGINX_HOME/html
+  
+  if [ "$?" != "0" ] ; then
+    echo "issue cert error."
+    return 1
+  fi
+
+  if ! sed -i "s|\(location.*#acme$\)|#\\1|" "$domainconf" ; then
+    echo "#acme restore error."
+    return 1
+  fi
+
+}
+
+
 addssl() {
   domainlist="$1"
   uphost="$2"
@@ -260,12 +303,29 @@ addssl() {
   
   _setopt "$domainconf" "    server_name" " " "$domainlist" ";"
   
-  cp "$cert" "$SSLPATH/$maindomain.cer"
-  cp "$key"  "$SSLPATH/$maindomain.key"
-  
-  if [ "$ca" ] ; then
-    echo ""  >> "$SSLPATH/$maindomain.cer"
-    cat "$ca" >> "$SSLPATH/$maindomain.cer"
+  if [ "$cert" ] ; then
+    cp "$cert" "$SSLPATH/$maindomain.cer"
+    cp "$key"  "$SSLPATH/$maindomain.key"
+    
+    if [ "$ca" ] ; then
+      echo ""  >> "$SSLPATH/$maindomain.cer"
+      cat "$ca" >> "$SSLPATH/$maindomain.cer"
+    fi
+  else
+    if ! issuecert $maindomain ; then
+      echo "can not issue cert."
+      return 1
+    fi
+    
+    acme.sh --installcert \
+    -d $maindomain \
+    --keypath "$SSLPATH/$maindomain.key" \
+    --fullchainpath "$SSLPATH/$maindomain.cer" \
+    --reloadcmd "service nginx reload"
+    if [ "$?" != "0" ] ; then
+      echo "install cert error"
+      return 1
+    fi
   fi
   
   _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/$maindomain.cer" ";"
