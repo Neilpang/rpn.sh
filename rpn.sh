@@ -269,6 +269,7 @@ issuecert() {
     echo "#acme sed error."
     return 1
   fi
+  service nginx reload
 
   $ACME --issue \
   $(grep -o "server_name.*;$" "$domainconf" | tr  -d ';' | sed "s/server_name//" | sed "s/ / -d /g") \
@@ -283,7 +284,7 @@ issuecert() {
     echo "#acme restore error."
     return 1
   fi
-
+  service nginx reload
 }
 
 
