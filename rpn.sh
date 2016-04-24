@@ -207,7 +207,7 @@ install() {
   
   if command -v curl >/dev/null 2>&1 ; then
     curl  https://get.acme.sh | sh
-  else if command -v wget >/dev/null 2>&1 ;
+  else if command -v wget >/dev/null 2>&1 ; then
     wget -O-  https://get.acme.sh | sh
   fi
 }
