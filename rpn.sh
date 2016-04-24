@@ -16,6 +16,8 @@ CONFPATH="$NGINX_HOME/conf.d"
 SSLPATH="$CONFPATH/ssl"
 PID="/var/run/nginx.pid"
 
+ACME=/root/.acme.sh/acme.sh
+
 _debug() {
   if [ -z "$DEBUG" ] ; then
     return
@@ -268,7 +270,7 @@ issuecert() {
     return 1
   fi
 
-  acme.sh --issue \
+  $ACME --issue \
   $(grep -o "server_name.*;$" "$domainconf" | tr  -d ';' | sed "s/server_name//" | sed "s/ / -d /g") \
   -w $NGINX_HOME/html
   
@@ -317,7 +319,7 @@ addssl() {
       return 1
     fi
     
-    acme.sh --installcert \
+    $ACME --installcert \
     -d $maindomain \
     --keypath "$SSLPATH/$maindomain.key" \
     --fullchainpath "$SSLPATH/$maindomain.cer" \
