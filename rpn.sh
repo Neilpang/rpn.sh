@@ -218,7 +218,7 @@ install() {
 
 add() {
   if [ -z "$1" ] ; then
-    _err "Usage: addssl 'aa.com www.aa.com'  'http[s]://www.google.com'"
+    _err "Usage: add 'aa.com www.aa.com'  'http[s]://www.google.com'"
     return 1
   fi
   
