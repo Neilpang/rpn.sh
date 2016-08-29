@@ -295,16 +295,16 @@ addssl() {
   key="$4"
   ca="$5"
   
-  if [ -z "$key" ] ; then
-    _err "Usage: addssl 'aa.com www.aa.com'  'http[s]://www.google.com'  /path/to/aa.cer  /path/to/aa.key  /path/to/aa.ca"
+  if [ -z "$domainlist" ] ; then
+    _err "Usage: addssl 'aa.com www.aa.com'  'http[s]://www.google.com'  [/path/to/aa.cer  /path/to/aa.key  /path/to/aa.ca]"
     return 1
   fi
   
   maindomain="$(printf "$domainlist" | cut -d ' ' -f 1)"
-  domainconf="$RPN_HOME/$maindomain.ssl.conf"
-  cp $RPN_HOME/serverssl.conf "$domainconf"
+  sslconf="$RPN_HOME/$maindomain.ssl.conf"
+  cp $RPN_HOME/serverssl.conf "$sslconf"
   
-  _setopt "$domainconf" "    server_name" " " "$domainlist" ";"
+  _setopt "$sslconf" "    server_name" " " "$domainlist" ";"
   
   if [ "$cert" ] ; then
     cp "$cert" "$SSLPATH/$maindomain.cer"
@@ -331,23 +331,23 @@ addssl() {
     fi
   fi
   
-  _setopt "$domainconf" "    ssl_certificate" " " "$SSLPATH/$maindomain.cer" ";"
-  _setopt "$domainconf" "    ssl_certificate_key" " " "$SSLPATH/$maindomain.key" ";"
+  _setopt "$sslconf" "    ssl_certificate" " " "$SSLPATH/$maindomain.cer" ";"
+  _setopt "$sslconf" "    ssl_certificate_key" " " "$SSLPATH/$maindomain.key" ";"
   
-  _setopt "$domainconf" "        proxy_pass" " " "$uphost" ";"
+  _setopt "$sslconf" "        proxy_pass" " " "$uphost" ";"
 
   if echo $uphost | grep '[0-9]*.[0-9]*.[0-9]*.[0-9]*' > /dev/null ; then
     updomain=$maindomain
   else
     updomain="$(echo $uphost | cut -d : -f 2 | tr -d "/")"
-    sed -i  "/#subfilter/a \        sub_filter $updomain $maindomain;"  "$domainconf"
+    sed -i  "/#subfilter/a \        sub_filter $updomain $maindomain;"  "$sslconf"
   fi
   
-  _setopt "$domainconf" "        proxy_set_header Host" " " "$updomain" ";"
+  _setopt "$sslconf" "        proxy_set_header Host" " " "$updomain" ";"
 
   
   
-  mv "$domainconf" "$CONFPATH"
+  mv "$sslconf" "$CONFPATH"
   service nginx restart
 }
 
