@@ -2,6 +2,7 @@
 
 DEFAULT_HOME="$HOME/.rpn"
 
+_SCRIPT_="$0"
 
 if [ -z "$RPN_HOME" ] ; then
   RPN_HOME="$DEFAULT_HOME"
@@ -265,28 +266,29 @@ issuecert() {
     return 1
   fi
 
-  if ! sed -i "s|#\(location.*#acme$\)|\\1|" "$domainconf" ; then
-    echo "#acme sed error."
-    return 1
-  fi
-  service nginx restart
 
   $ACME --issue \
   $(grep -o "server_name.*;$" "$domainconf" | tr  -d ';' | sed "s/server_name//" | sed "s/ / -d /g") \
-  -w $NGINX_HOME/html
+  -w $NGINX_HOME/html \
+  --pre-hook "$_SCRIPT_ pre_hook $domainconf" \
+  --post-hook "$_SCRIPT_ post_hook $domainconf"
   
   if [ "$?" != "0" ] ; then
     echo "issue cert error."
     return 1
   fi
 
-  if ! sed -i "s|\(location.*#acme$\)|#\\1|" "$domainconf" ; then
-    echo "#acme restore error."
-    return 1
-  fi
-  service nginx restart
 }
 
+pre_hook() {
+  _d_conf="$1"
+  sed -i "s|#\(location.*#acme\)|\\1|" $_d_conf && service nginx restart
+}
+
+post_hook() {
+  _d_conf="$1"
+  sed -i "s|\(location.*#acme\)|#\\1|"  $_d_conf 
+}
 
 addssl() {
   domainlist="$1"
@@ -324,7 +326,7 @@ addssl() {
     -d $maindomain \
     --keypath "$SSLPATH/$maindomain.key" \
     --fullchainpath "$SSLPATH/$maindomain.cer" \
-    --reloadcmd "service nginx reload"
+    --reloadcmd "service nginx restart"
     if [ "$?" != "0" ] ; then
       echo "install cert error"
       return 1
