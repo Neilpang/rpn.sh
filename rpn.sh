@@ -8,7 +8,7 @@ if [ -z "$RPN_HOME" ] ; then
   RPN_HOME="$DEFAULT_HOME"
 fi
 
-N_VER="1.9.12"
+N_VER="1.11.7"
 
 SBIN="/usr/sbin/nginx"
 CACHE="/var/cache/nginx"
@@ -103,11 +103,12 @@ buildnginx() {
   --with-cc-opt='-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
   --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed' \
   --with-ipv6 \
+  --with-stream \
   --with-http_sub_module
 
   make
   
-  mkdir -p "$$CACHE"
+  mkdir -p "$CACHE"
   mkdir -p "$CONFPATH"
   mkdir -p "$SSLPATH"
   
