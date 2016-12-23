@@ -354,6 +354,26 @@ addssl() {
   service nginx restart
 }
 
+#port dest_ip dest_port
+addtcp(){
+  _port="$1"
+  _dest_ip="$2"
+  _dest_port="$3"
+  
+  if [ -z "$_dest_port" ]; then
+    _err "Usage: addtcp port dest_ip dest_port"
+    return 1
+  fi
+  
+  tcpconf="$RPN_HOME/$_port.conf"
+  cp $RPN_HOME/tcp.conf "$tcpconf"
+  
+  _setopt "$tcpconf" "        listen" " " "$_port" ";"
+  _setopt "$tcpconf" "        server" " " "$_dest_ip:$_dest_port" ";"
+
+  mv "$tcpconf" "$CONFPATH"
+  service nginx force-reload
+}
 
 
 #setopt "file"  "opt"  "="  "value" [";"]
@@ -428,7 +448,7 @@ list() {
 }
 
 showhelp() {
-  _info "Usage: buildnginx|install|add|addssl|list"
+  _info "Usage: buildnginx|install|add|addssl|addtcp|list"
 }
 
 if [ -z "$1" ] ; then
